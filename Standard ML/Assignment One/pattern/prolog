@@ -1,0 +1,12 @@
+min2([_],0).
+min2([_,B],B).
+min2([A,B,C|Ds],Ans) :- A > B, min2([B,A,C|Ds],Ans).
+min2([A,_,C|Ds],Ans) :- C < A, min2([C,A,C|Ds],Ans).
+min2([A,B,C|Ds],Ans) :- C > A, C < B, min2([A,C|Ds],Ans).
+min2([A,B,_|Ds],Ans) :- min2([A,B|Ds],Ans).
+
+
+
+inc1(_,[],[]).
+inc1(A,[[B,C]|Ds],Ans) :- A=:=B, inc1(A,Ds,Ans2), C1 is C+1, Ans = [[B,C1]|Ans2].
+inc1(A,[[B,C]|Ds],Ans) :- inc1(A,Ds,Ans2), Ans = [[B,C]|Ans2].

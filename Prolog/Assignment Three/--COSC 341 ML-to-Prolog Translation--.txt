@@ -1,0 +1,186 @@
+--COSC 341 ML-to-Prolog Translation--
+
+Written by Cromwell Bost Jr.
+
+Consider the ML Function
+
+fun fact(n) =
+   if n=0 then 1
+   else n * fact(n-1)
+
+
+For every function in ML that has n parameters, a Prolog relation has n+1 parameters.
+
+This syntax is most similar to ML Pattern-Style. Let's convert the function to pattern-style to help us out better!
+
+fun fact(0) = 1
+|   fact(n) = n * fact(n-1)
+
+
+
+
+Now let's translate.
+
+If the input is 0, return 1.
+
+fun fact(0) = 1 <==== ML
+
+fact(0,1) <==== Prolog
+
+
+
+|   fact(n) = n * fact(n-1) <=== ML
+
+fact(N, Ans) :- N1 is N-1, fact(N1, Ans2), Ans is N * Ans2 <=== Prolog
+
+
+
+In Prolog, you'll need an additional parameter to store your output or 'Ans'
+
+Let's walk through this.
+
+'fact(N, Ans)' is just like pattern-style in ML; N is your input, Ans is your output.
+The symbol ':-' is similar to ML's '='; they can be used in the same way here.
+
+'N1 is N-1' is a Prolog assignment. Because of syntax rules, we have to create another variable to hold the induction. 'N-1' is the induction which carries the relation/function to the next step.
+
+After creating it, substitute it into the function. This is what 'fact(N1, Ans2)' represents.
+
+Now to address the elephant in the program. What on earth is Ans2??? This is another one of Prolog's ridiculous syntax rules. Prolog parameters can NOT hold arithmetic! That's why we have to create additional variables, like 'N1 & Ans2', to hold even the most basic arithmetic. This is also why we stored the induction in N1; N-1 counts as arithmetic of course.
+
+Now then, think of Ans2 as a "label" to Ans. We need it to represent the arithmetic in 'Ans.'
+
+That gives us this ===> 'Ans is Ans2 * N.'
+
+We do that instead of 'Ans is Ans * N' because you can not perform any actions on a variable without initializing it first, so assigning 'Ans' to itself before initialization doesn't make any sense; 'Ans' doesn't equal anything yet.
+
+
+Therefore the following is our completed program!
+
+
+fact(0,1).
+fact(N,Ans) :- N1 is N-1, fact(N1, N*Ans).
+
+
+
+Here's some other examples that translate more ML code to Prolog:
+
+1.) 
+
+	fun mul(a,b) =
+  	    if a=0 then 0
+            else b + mul(a-1,b);
+
+
+Convert to Pattern-Style (Try to convert without looking at ML Pattern Style)
+
+fun mul(0,_) = 0
+|   mul(a,b) = b + mul(a-1,b);
+
+Now perform the translation!
+
+
+mul(0,B,0) ==> B isn't used here, so get rid of it (wildcard)
+
+mul(0,_,0).
+mul(A,B,Ans) :- A1 is A-1, mul(A1,B,Ans2), Ans is B + Ans2.
+
+
+
+
+Here's another:
+
+
+fun fib(n) =
+  if n=0 then 0
+  else if n=1 then 1
+  else fib(n-1) + fib(n-2);
+
+This seems like a tough one, but try to follow the logic from above.
+
+
+Convert to Pattern-Style (Again, try to convert without looking at ML Pattern Style)
+
+
+fun fib(0) = 0
+|   fib(1) = 1
+|   fib(n) = fib(n-1) + fib(n-2);
+
+
+Now perform the translation:
+
+               ML Language       <=====>           Prolog
+
+fun fib(0) = 0                   <=====>  fib(0,0).
+|   fib(1) = 1                   <=====>  fib(1,1).
+|   fib(n) = fib(n-1) + fib(n-2) <=====>  fib(N,Ans) :- N1 is N-1, N2 is N-2, fib(N1,Ans2), fib(N2,Ans3), Ans is Ans2 + Ans3.
+
+        
+
+
+Final Prolog code:
+
+fib(0,0).
+fib(1,1).
+fib(N,Ans) :- N1 is N-1, N2 is N-2, fib(N1,Ans2), fib(N2,Ans3), Ans is Ans2 + Ans3.
+
+
+
+To explain this one a little more, We need two labels for 'Ans': Ans2 & Ans3. 
+
+Ans2 ==> fib(n-1)
+Ans3 ==> fib(n-2)
+
+So fib(n-1) + fib(n-2) is equal to Ans2 + Ans3 which we store in Ans.
+
+
+
+Here's some other recursions that deals with lists.
+
+1.)
+
+fun db(L) = 
+  if null L then nil
+  else 2 * hd L :: db(tl L);
+
+  Convert to pattern-style
+
+fun db(nil) = nil
+|   db(x::xs) = (2*x) :: db(xs);
+
+
+
+db([],[]).
+db([X|Xs], Ans) :- db(Xs, Ans2), X1 is 2*X, Ans = [X1|Ans2].
+
+
+
+2.)
+
+fun double(L) =
+  if null L then nil
+  else hd L :: hd L :: double(tl L);
+
+
+fun double(nil) = nil
+|   double(x::xs) = x :: x :: double(xs)
+
+
+
+double([],[]).
+double([X|Xs], Ans) :- double(Xs, Ans2), Ans = [X,X|Ans2].
+
+
+
+
+
+Email me here if you have any questions!
+
+cbost@emich.edu
+
+
+
+
+
+
+

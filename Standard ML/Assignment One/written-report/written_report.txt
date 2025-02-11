@@ -1,0 +1,47 @@
+I. Reference ...
+
+    i.) For problem #8 I borrowed an algorithm and implemented the logical in SML. The algorithm can be found here https://www.geeksforgeeks.org/to-find-smallest-and-second-smallest-element-in-an-array/.
+
+II. Design ...
+
+    Each design for each problem follows the same logic as discussed in class. I paid more attention to how the logic of N-1 works. It could be N-2, or N div 10, maybe N mod 2. It's very situational 
+
+III. Difficulty ...
+
+    This assignment was actively engaging, however, #8 was by far the hardest question I encountered. It was the only on is which I needed to borrow an algorithm just to get an idea of how the job could be completed.
+
+    Reference: https://www.geeksforgeeks.org/to-find-smallest-and-second-smallest-element-in-an-array/
+
+IV. Comments ...
+
+    I'd like to practice more stuff like this in other languages. I've grown to adore the functional programming paradigm. Haskell & ML are some of my go-to languages.
+
+Appendix One -- Source Code
+
+    (* FUNCTION NAME: min2(int list) *)
+
+(* DESCRIPTION: Function considers an int list and implements a linear search algorithm to find the 2nd smallest element.*)
+
+
+fun min2(_::nil) = 0
+|   min2(_::b::nil) = b
+|   min2(a::b::c::ds) =
+    if a > b then min2(b :: a :: (c::ds))
+    else if c < a then min2(c :: a :: c :: ds)
+    else if c > a andalso c < b then min2(a :: c :: ds)
+    else min2(a :: b :: ds);
+
+
+Appendix Two -- Sample Runs 
+
+    Inputs
+
+min2[12,67,89,3,4,12];
+min2[6,7,8,12,45,6];
+min2[3,4];
+
+    Outputs
+
+val it = 4 : int
+val it = 7 : int
+val it = 4 : int
